@@ -11,13 +11,9 @@ fn main() {
                 .unwrap()
         })
         .collect();
-    let time = input[0].clone();
-    let distance = input[1].clone();
-    let mut c = 0;
-    for x in 0..time {
-        if x * (time - x) > distance {
-            c += 1;
-        }
-    }
-    println!("{}", c);
+    let times = vec![input[0].clone()];
+    let distances = vec![input[1].clone()];
+    println!("{}", times.iter().zip(distances).fold(1, |n, (&time, distance)| {
+        n * (0..time).filter(|x| x*(time-x) > distance).count()
+    }));
 }

@@ -12,15 +12,7 @@ fn main() {
         .collect();
     let times = input[0].clone();
     let distances = input[1].clone();
-    let mut n = 1;
-    for i in 0..times.len() {
-        let mut c = 0;
-        for x in 0..times[i] {
-            if x * (times[i] - x) > distances[i] {
-                c += 1;
-            }
-        }
-        n *= c;
-    }
-    println!("{}", n);
+    println!("{}", times.iter().zip(distances).fold(1, |n, (&time, distance)| {
+        n * (0..time).filter(|x| x*(time-x) > distance).count()
+    }));
 }
