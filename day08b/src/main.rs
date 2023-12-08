@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use itertools::Itertools;
+use petgraph::{graphmap::DiGraphMap, dot::{Dot, Config}};
 
 fn main() {
     let input = include_str!("/tmp/input.txt").trim_end();
@@ -26,6 +27,19 @@ fn main() {
             h.insert(k, v);
             h
         });
+    let g: DiGraphMap<&str, ()> = DiGraphMap::from_edges(
+        network
+            .iter()
+            .flat_map(|(k, v)| {
+                vec![
+                    (k.as_str(), v.0.as_str()),
+                    (k.as_str(), v.1.as_str()),
+                ]
+            })
+            .collect::<Vec<(&str, &str)>>(),
+    );
+    println!("{:?}", Dot::with_config(&g, &[Config::EdgeNoLabel]));
+
     let mut currs: Vec<String> = network
         .keys()
         .filter(|&k| k.ends_with("A"))
