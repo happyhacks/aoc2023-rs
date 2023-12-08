@@ -126,7 +126,7 @@ impl Hand {
                     Combo::FourOfAKind
                 }
             }
-            _ => Combo::HighCard,
+            _ => unreachable!(),
         }
     }
 }
