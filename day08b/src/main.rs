@@ -39,6 +39,7 @@ fn main() {
             .enumerate()
             .filter(|(_, k)| k.ends_with("Z"))
             .for_each(|(idx, _)| {
+                assert!(times[idx] == 1); // never again - single cycle - shortest cycle
                 times[idx] = c;
             });
         if times.iter().all(|&t| t > 1) {
