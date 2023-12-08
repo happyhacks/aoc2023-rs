@@ -1,7 +1,10 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use itertools::Itertools;
-use petgraph::{graphmap::DiGraphMap, dot::{Dot, Config}};
+use petgraph::{
+    dot::{Config, Dot},
+    graphmap::DiGraphMap,
+};
 
 fn main() {
     let input = include_str!("/tmp/input.txt").trim_end();
@@ -30,16 +33,27 @@ fn main() {
     let g: DiGraphMap<&str, ()> = DiGraphMap::from_edges(
         network
             .iter()
-            .flat_map(|(k, v)| {
-                vec![
-                    (k.as_str(), v.0.as_str()),
-                    (k.as_str(), v.1.as_str()),
-                ]
-            })
+            .flat_map(|(k, v)| vec![(k.as_str(), v.0.as_str()), (k.as_str(), v.1.as_str())])
             .collect::<Vec<(&str, &str)>>(),
     );
-    println!("{:?}", Dot::with_config(&g, &[Config::EdgeNoLabel]));
 
+    if cfg!(debug_assertions) {
+        println!("{:?}", Dot::with_config(&g, &[Config::EdgeNoLabel]));
+    }
+    assert!(
+        HashSet::<String>::from_iter(
+            network
+                .iter()
+                .filter(|(k, _)| k.ends_with("A"))
+                .flat_map(|(_, v)| vec![v.0.clone(), v.1.clone()])
+        ) == HashSet::<String>::from_iter(
+            network
+                .iter()
+                .filter(|(k, _)| k.ends_with("Z"))
+                .flat_map(|(_, v)| vec![v.0.clone(), v.1.clone()])
+        )
+    );
+    
     let mut currs: Vec<String> = network
         .keys()
         .filter(|&k| k.ends_with("A"))
@@ -47,6 +61,7 @@ fn main() {
         .collect();
     let mut c = 0u64;
     let mut times = vec![1; currs.len()];
+
     for mov in directions.chars().cycle() {
         currs
             .iter()
