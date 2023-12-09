@@ -53,7 +53,7 @@ fn main() {
                 .flat_map(|(_, v)| vec![v.0.clone(), v.1.clone()])
         )
     );
-    
+
     let mut currs: Vec<String> = network
         .keys()
         .filter(|&k| k.ends_with("A"))
@@ -84,6 +84,7 @@ fn main() {
             }
         })
     }
+    dbg!(times.clone());
     println!(
         "{}",
         times.iter().fold(1, |lcm, &t| num::integer::lcm(t, lcm))
