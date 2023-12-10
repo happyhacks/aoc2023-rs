@@ -23,18 +23,12 @@ impl Dir {
 fn opens(b: u8, d: Dir) -> bool {
     match (b, d) {
         (b'S', _) => true,
-        (b'|', Dir::South) => true,
-        (b'|', Dir::North) => true,
-        (b'-', Dir::East) => true,
-        (b'-', Dir::West) => true,
-        (b'F', Dir::East) => true,
-        (b'F', Dir::South) => true,
-        (b'L', Dir::North) => true,
-        (b'L', Dir::East) => true,
-        (b'J', Dir::West) => true,
-        (b'J', Dir::North) => true,
-        (b'7', Dir::West) => true,
-        (b'7', Dir::South) => true,
+        (b'|', Dir::South | Dir::North) => true,
+        (b'-', Dir::East | Dir::West) => true,
+        (b'F', Dir::East | Dir::South) => true,
+        (b'L', Dir::North | Dir::East) => true,
+        (b'J', Dir::West | Dir::North) => true,
+        (b'7', Dir::West | Dir::South) => true,
         _ => false,
     }
 }
@@ -72,7 +66,7 @@ impl Grid {
     }
     fn xln(&self) -> usize {
         if self.yln() > 0 {
-            return self.0[0].len()
+            return self.0[0].len();
         }
         0
     }

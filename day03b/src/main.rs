@@ -35,7 +35,7 @@ impl Pos {
         None
     }
 
-    fn prev(&self, ln: usize) -> Option<Pos> {
+    fn _prev(&self, ln: usize) -> Option<Pos> {
         let &Pos(x, y) = self;
         let nxt = Pos(x - 1, y);
         if nxt.is_valid(ln) {
@@ -79,7 +79,7 @@ fn _main() {
                 .for_each(|pos| {
                     let mut c = pos;
                     while g.num(c) {
-                        match c.prev(ln) {
+                        match c._prev(ln) {
                             Some(nxt) => c = nxt,
                             None => break,
                         }
