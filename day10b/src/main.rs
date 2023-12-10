@@ -1,5 +1,4 @@
 use std::collections::{HashSet, VecDeque};
-use std::hash::Hash;
 
 #[derive(Clone, Copy, Debug)]
 enum Dir {
@@ -44,9 +43,9 @@ fn opens(b: u8, d: Dir) -> bool {
 struct Pos(i32, i32);
 
 impl Pos {
-    fn is_valid(&self, ln: usize) -> bool {
+    fn is_valid(&self, yln: usize, xln: usize) -> bool {
         let p = self;
-        p.0 >= 0 && p.1 >= 0 && p.0 < ln as i32 && p.1 < ln as i32
+        p.0 >= 0 && p.1 >= 0 && p.0 < xln as i32 && p.1 < yln as i32
     }
     fn north(&self) -> Pos {
         let &Pos(x, y) = self;
@@ -68,8 +67,14 @@ impl Pos {
 
 struct Grid(Vec<Vec<u8>>);
 impl Grid {
-    fn ln(&self) -> usize {
+    fn yln(&self) -> usize {
         self.0.len()
+    }
+    fn xln(&self) -> usize {
+        if self.yln() > 0 {
+            return self.0[0].len()
+        }
+        0
     }
     fn at(&self, p: Pos) -> u8 {
         self.0[p.1 as usize][p.0 as usize]
@@ -87,7 +92,7 @@ impl Grid {
             Dir::North => p.north(),
             Dir::South => p.south(),
         };
-        if next.is_valid(self.ln()) {
+        if next.is_valid(self.yln(), self.xln()) {
             return Some(next);
         }
         None
@@ -115,12 +120,11 @@ fn main() {
         .lines()
         .map(|l| l.as_bytes().to_vec())
         .collect();
-    let ln = grid.len();
     let mut g = Grid(grid);
     let mut queue = VecDeque::new();
     let mut visited = HashSet::new();
-    for y in 0..ln {
-        for x in 0..ln {
+    for y in 0..g.yln() {
+        for x in 0..g.xln() {
             let curr = Pos(x as i32, y as i32);
             if g.at(curr) == b'S' {
                 visited.insert(curr);
@@ -140,9 +144,9 @@ fn main() {
         }
     }
     let mut c = 0;
-    for y in 0..ln {
+    for y in 0..g.yln() {
         let mut out = true;
-        for x in 0..ln {
+        for x in 0..g.xln() {
             let curr = Pos(x as i32, y as i32);
             let orig = g.at(curr);
             if visited.contains(&curr)
