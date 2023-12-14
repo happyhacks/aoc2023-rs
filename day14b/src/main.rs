@@ -1,5 +1,5 @@
 use std::{
-    collections::{BTreeSet, HashSet, HashMap},
+    collections::{BTreeSet, HashMap, HashSet},
     fmt::{self, Debug},
 };
 #[allow(dead_code)]
@@ -12,12 +12,12 @@ enum Dir {
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-struct Pos(i32, i32);
+struct Pos(i8, i8);
 
 impl Pos {
     fn is_valid(&self, yln: usize, xln: usize) -> bool {
         let p = self;
-        p.0 >= 0 && p.1 >= 0 && p.0 < xln as i32 && p.1 < yln as i32
+        p.0 >= 0 && p.1 >= 0 && p.0 < xln as i8 && p.1 < yln as i8
     }
     fn north(&self) -> Pos {
         let &Pos(x, y) = self;
@@ -82,7 +82,7 @@ impl Debug for Pattern {
         write!(f, "\n")?;
         for y in 0..self.yln {
             for x in 0..self.xln {
-                let p = Pos(x as i32, y as i32);
+                let p = Pos(x as i8, y as i8);
                 if self.cube.contains(&p) {
                     write!(f, "#")?;
                 } else if self.round.contains(&p) {
@@ -108,10 +108,10 @@ impl Pattern {
         rows.iter().enumerate().for_each(|(y, row)| {
             row.iter().enumerate().for_each(|(x, cell)| match cell {
                 Cell::Round => {
-                    p.round.insert(Pos(x as i32, y as i32));
-                },
+                    p.round.insert(Pos(x as i8, y as i8));
+                }
                 Cell::Cube => {
-                    p.cube.insert(Pos(x as i32, y as i32));
+                    p.cube.insert(Pos(x as i8, y as i8));
                 }
                 _ => {}
             })
@@ -136,7 +136,7 @@ impl Pattern {
             Dir::North | Dir::South => self.yln,
         };
         for _ in 0..count {
-            self.round = self
+            let next = self
                 .round
                 .iter()
                 .map(|&p| match self.roll(p, d) {
@@ -150,12 +150,16 @@ impl Pattern {
                     None => p,
                 })
                 .collect();
+            if next == self.round {
+                break;
+            }
+            self.round = next;
         }
     }
     fn score(&self) -> usize {
         self.round
             .iter()
-            .map(|Pos(_, y)| self.yln as i32 - y)
+            .map(|&Pos(_, y)| self.yln as i32 - y as i32)
             .sum::<i32>() as usize
     }
 }
@@ -168,7 +172,7 @@ fn main() {
             .map(|s| s.chars().map(|c| Cell::try_from(c).unwrap()).collect())
             .collect(),
     );
-    let mut seen: HashMap<_, _> = HashMap::new();
+    let mut seen = HashMap::new();
     let mut scores = Vec::new();
     for i in 0..300 {
         pat.tilt(Dir::North);
