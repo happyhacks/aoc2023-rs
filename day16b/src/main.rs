@@ -248,14 +248,14 @@ fn main() {
                     &pat,
                     Beam {
                         pos: Pos(idx as i32, 0),
-                        dir: Dir::East,
+                        dir: Dir::South,
                     },
                 )
                 .max(get_count_from(
                     &pat,
                     Beam {
                         pos: Pos(idx as i32, pat.yln as i32 - 1),
-                        dir: Dir::West,
+                        dir: Dir::North,
                     },
                 ))
             })
