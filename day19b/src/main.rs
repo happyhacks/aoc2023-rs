@@ -177,42 +177,38 @@ fn main() {
         "R".to_string(),
         Workflow {
             name: "R".to_string(),
-            steps: vec![],
+            steps: vec![], // terminate dfs here
         },
     );
     let successors = |(n, cons): &(String, Vec<Range<isize>>)| {
+        // state with node and current constraints
         let w = workflows
             .get(n)
             .unwrap_or_else(|| panic!("{} not found", n));
         let mut neigh = Vec::new();
-        let mut conn = cons.clone();
+        let mut conn = cons.clone(); //negative constraints
         for s in w.steps.iter() {
-            let mut cont = conn.clone();
+            let mut cont = conn.clone(); //positive constraints
+            let cidx = s.category as usize;
             match s.operation {
                 Op::LessThan => {
-                    cont[s.category as usize] = cont[s.category as usize].start..s.value;
+                    cont[cidx] = cont[cidx].start..s.value; // ranges are half-open
+                    conn[cidx] = s.value..conn[cidx].end; //invert the constraint
                 }
                 Op::GreaterThan => {
-                    cont[s.category as usize] = s.value + 1..cont[s.category as usize].end;
+                    cont[cidx] = s.value + 1..cont[cidx].end;
+                    conn[cidx] = conn[cidx].start..s.value + 1; //invert the constraint
                 }
                 Op::None => {}
             }
-            neigh.push((s.target.clone(), cont));
-            match s.operation {
-                Op::GreaterThan => {
-                    conn[s.category as usize] = conn[s.category as usize].start..s.value + 1;
-                }
-                Op::LessThan => {
-                    conn[s.category as usize] = s.value..conn[s.category as usize].end;
-                }
-                Op::None => {}
-            }
+            neigh.push((s.target.clone(), cont)); //positive for current, negative for old
         }
         neigh
     };
     let mut s: usize = 0;
     let success = |(n, cons): &(String, Vec<Range<isize>>)| {
         *n == "A".to_string() && {
+            // just calculate the number of combinations when we are Accepted
             // dbg!(cons);
             s += cons
                 .iter()
