@@ -212,7 +212,7 @@ fn main() {
             // dbg!(cons);
             s += cons
                 .iter()
-                .fold(1usize, |prod, c| prod * (c.end - c.start) as usize);
+                .map(|c| (c.end - c.start) as usize).product::<usize>();
             true
         }
     };

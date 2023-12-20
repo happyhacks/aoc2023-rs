@@ -138,5 +138,5 @@ fn main() {
             }
         }
     }
-    println!("{}", cycle.iter().fold(1, |l, &i| lcm(i, l)));
+    println!("{}", cycle.into_iter().reduce(lcm).unwrap());
 }

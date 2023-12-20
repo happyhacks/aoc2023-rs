@@ -87,6 +87,6 @@ fn main() {
     dbg!(times.clone());
     println!(
         "{}",
-        times.iter().fold(1, |lcm, &t| num::integer::lcm(t, lcm))
+        times.into_iter().reduce(num::integer::lcm).unwrap()
     );
 }
