@@ -136,7 +136,6 @@ fn main() {
     // dbg!(&b); // [3797, 34009, 94353]
     let a: Array2<f64> = array![[0., 0., 1.], [1., 1., 1.], [4., 2., 1.]];
     let x = a.solve_into(b).unwrap(); // [15066, 15146, 3797]
-    assert!(x[0] as usize == count(&g, 131, true));
     let p = (n / g.xln()) as f64;
     let y = array![p * p, p, 1.];
     println!("{}", x.dot(&y));
